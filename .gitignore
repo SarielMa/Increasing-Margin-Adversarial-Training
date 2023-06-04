@@ -1,0 +1,11 @@
+
+*.pyc
+*.npz
+*.pkl
+*.gz
+*.npy
+*.txt
+*.model
+*.png
+*.json
+*.DS_Store
