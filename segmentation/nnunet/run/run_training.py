@@ -41,6 +41,7 @@ def main():
     parser.add_argument("task", help="can be task name or task id")
     parser.add_argument("fold", help='0, 1, ..., 5 or \'all\'')
     """
+    parser.add_argument("--task", type = str, default = "004", help="can be task name or task id")
     parser.add_argument("-val", "--validation_only", help="use this if you want to only run the validation",
                         action="store_true")
     parser.add_argument("-c", "--continue_training", help="use this if you want to continue a training",
@@ -101,13 +102,8 @@ def main():
                              'Optional. Beta. Use with caution.')
 
     args = parser.parse_args()
-    """
     task = args.task
-    fold = args.fold
-    network = args.network
-    network_trainer = args.network_trainer
-    """
-    task = "004"
+    #task = "004"
     fold = "0"
     network = "2d"
     network_trainer = "nnUNetTrainerV2"

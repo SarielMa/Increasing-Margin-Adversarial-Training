@@ -208,61 +208,8 @@ def loss_ce_seg(Z, Y, reduction):
     else:
         raise ValueError('error')
     return loss
-#
-def run_model_std_seg_old(model, X, Y=None, return_loss=False, reduction='none'):
-    Z=model(X)
-    #-----
-    if type(Z)==tuple:
-        Z = Z[0]    
-    #Y = one_hot_output(Z, Y)      
-    #-----
-    if return_loss == True:
-        if Z.shape[1] == 1:
-            loss_ce=loss_bce_seg(Z, Y, reduction)
-            Yp=torch.sigmoid(Z)#segmentation map
-        else:
-            loss_ce=loss_ce_seg(Z, Y, reduction)
-            Yp=torch.softmax(Z, dim=1)#segmentation map       
-        loss_dice=loss_dice_seg(Yp, Y, reduction)
-        loss=(loss_ce+loss_dice)/2
-        return Yp, loss
-    else:
-        if Z.shape[1] == 1:
-            Yp=torch.sigmoid(Z)#segmentation map
-        else:
-            Yp=torch.softmax(Z, dim=1)#segmentation map
-        return Yp
-#
-def run_model_adv_seg_old(model, X, Y=None, return_loss=False, reduction='sum'):
-    Z=model(X)
-    #-----
-    if type(Z)==tuple:
-        Z = Z[0]    
-    #Y = one_hot_output(Z, Y)      
-    #-----
-    Yp=torch.sigmoid(Z)#segmentation map
-    if return_loss == True:
-        loss_dice=loss_dice_seg(Yp, Y, reduction=reduction)
-        return Yp, loss_dice
-    else:
-        return Yp
-    
     
 
-"""
-def classify_model_std_output_seg(Yp, Y):
-    threshold=0.9
-    dice=dice_seg(Yp, Y, reduction='none')
-    Yp_e_Y=(dice>threshold)
-    return Yp_e_Y
-#
-def classify_model_adv_output_seg(Ypn, Y):
-    #Y could be Ytrue or Ypred
-    threshold=0.9
-    dice=dice_seg(Ypn, Y, reduction='none')
-    Ypn_e_Y=(dice>threshold)
-    return Ypn_e_Y
-"""
 #%%
 # this is in fact binary PGD attack
 def pgd_attack(task, model, X, Y, noise_norm, norm_type, max_iter, step,
@@ -354,50 +301,50 @@ def pgd_attack(task, model, X, Y, noise_norm, norm_type, max_iter, step,
     if stop_near_boundary == True:
         temp=advc>0
         if temp.sum()>0:
-            Xn_out=refine_Xn_onto_boundary(model, Xn1, Xn2, Y, refine_Xn_max_iter, run_model, classify_model_output)
+            Xn_out=refine_Xn_onto_boundary(task, model, Xn1, Xn2, Y, refine_Xn_max_iter, run_model, classify_model_output)
     elif stop_if_label_change == True:
         temp=advc>0
         if temp.sum()>0:
-            Xn_out=refine_Xn2_onto_boundary(model, Xn1, Xn2, Y, refine_Xn_max_iter, run_model, classify_model_output)
+            Xn_out=refine_Xn2_onto_boundary(task, model, Xn1, Xn2, Y, refine_Xn_max_iter, run_model, classify_model_output)
     elif stop_if_label_change_next_step == True:
         temp=advc>0
         if temp.sum()>0:
-            Xn_out=refine_Xn1_onto_boundary(model, Xn1, Xn2, Y, refine_Xn_max_iter, run_model, classify_model_output)
+            Xn_out=refine_Xn1_onto_boundary(task, model, Xn1, Xn2, Y, refine_Xn_max_iter, run_model, classify_model_output)
     #---------------------------
     if train_mode == True and model.training == False:
         model.train()
     #---------------------------
     return Xn_out, advc
 #%%
-def refine_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
+def refine_onto_boundary(task, model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
 #note: Xn1 and Xn2 will be modified
     with torch.no_grad():
         Xn=(Xn1+Xn2)/2
         for k in range(0, max_iter):
             Ypn=run_model(model, Xn, return_loss=False)            
-            Ypn_e_Y=classify_model_output(Ypn, Y)
+            Ypn_e_Y=classify_model_output(Ypn, Y, task)
             Ypn_ne_Y=~Ypn_e_Y
             Xn1[Ypn_e_Y]=Xn[Ypn_e_Y]
             Xn2[Ypn_ne_Y]=Xn[Ypn_ne_Y]
             Xn=(Xn1+Xn2)/2
     return Xn, Xn1, Xn2
 #%%
-def refine_Xn_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
+def refine_Xn_onto_boundary(task, model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
 #note: Xn1 and Xn2 will be modified
-    Xn, Xn1, Xn2=refine_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output)
+    Xn, Xn1, Xn2=refine_onto_boundary(task,model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output)
     return Xn
 #%%
-def refine_Xn1_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
+def refine_Xn1_onto_boundary(task, model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
 #note: Xn1 and Xn2 will be modified
-    Xn, Xn1, Xn2=refine_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output)
+    Xn, Xn1, Xn2=refine_onto_boundary(task,model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output)
     return Xn1
 #%%
-def refine_Xn2_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
+def refine_Xn2_onto_boundary(task, model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output):
 #note: Xn1 and Xn2 will be modified
-    Xn, Xn1, Xn2=refine_onto_boundary(model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output)
+    Xn, Xn1, Xn2=refine_onto_boundary(task, model, Xn1, Xn2, Y, max_iter, run_model, classify_model_output)
     return Xn2
 #%%
-def repeated_pgd_attack(task,model, X, Y, noise_norm, norm_type, max_iter, step,
+def repeated_pgd_attack(task, model, X, Y, noise_norm, norm_type, max_iter, step,
                         rand_init_norm=None, rand_init_Xn=None,
                         targeted=False, clip_X_min=0, clip_X_max=1,
                         refine_Xn_max_iter=10,

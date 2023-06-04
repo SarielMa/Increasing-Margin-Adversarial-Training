@@ -32,11 +32,17 @@ from nnunet.utilities.task_name_id_conversion import convert_id_to_task_name
 
 def maybe_mkdir_p(directory: str) -> None:
     os.makedirs(directory, exist_ok=True)
+    
+    
 
-def main():
+
+def main(params):
     parser = argparse.ArgumentParser()
     
+    #parser.add_argument("network")
+    #parser.add_argument("network_trainer")
     parser.add_argument("--task", type = str, default = "004", help="can be task name or task id")
+    #parser.add_argument("fold", help='0, 1, ..., 5 or \'all\'')
     
     parser.add_argument("-val", "--validation_only", help="use this if you want to only run the validation",
                         action="store_true")
@@ -99,9 +105,13 @@ def main():
 
     args = parser.parse_args()
     
-    task = args.task   
+    task = args.task
+    #fold = args.fold
+    #network = args.network
+    #network_trainer = args.network_trainer
+    
     #task = "002"
-    fold = "0"
+    fold = "1"
     network = "2d"
     network_trainer = "nnUNetTrainerV2"
     validation_only = args.validation_only
@@ -184,7 +194,7 @@ def main():
                 # new training without pretraine weights, do nothing
                 pass
 
-            trainer.run_IMA_training()
+            trainer.run_IMA_training_grid(params)
         else:
             if valbest:
                 trainer.load_best_checkpoint(train=False)
@@ -203,7 +213,88 @@ def main():
             predict_next_stage(trainer, join(dataset_directory, trainer.plans['data_identifier'] + "_stage%d" % 1))
 
 
+
+class IMA_parameters_D2:
+    def __init__(self, delta, noise):           
+        #used to pass parameters to ima iteration
+        self.task = "002"
+        self.noise = noise 
+        self.norm_type = 2
+        self.alpha = 4
+        self.max_iter = 20
+        self.stop = 1
+        self.refine_Xn_max_iter = 10
+        self.beta = 0.5
+        self.beta_position =1
+        self.E = 0
+        self.epoch_refine = 10
+        self.delta = delta 
+        self.model_eval_attack=0
+        self.model_eval_Xn=0
+        self.model_Xn_advc_p=0
+        self.Xn1_equal_X =0
+        self.Xn2_equal_Xn =0
+        self.pgd_replace_Y_with_Yp=0   
+        self.title = "IMA"+self.task
+
+class IMA_parameters_D4:# for D4
+    def __init__(self, delta, noise):           
+        #used to pass parameters to ima iteration
+        self.task = "004"
+        self.noise = noise #15
+        self.norm_type = 2
+        self.alpha = 4
+        self.max_iter = 20
+        self.stop = 1
+        self.refine_Xn_max_iter = 10
+        self.beta = 0.5
+        self.beta_position =1
+        self.E = 0
+        self.epoch_refine = 10
+        self.delta = delta #2.5
+        self.model_eval_attack=0
+        self.model_eval_Xn=0
+        self.model_Xn_advc_p=0
+        self.Xn1_equal_X =0
+        self.Xn2_equal_Xn =0
+        self.pgd_replace_Y_with_Yp=0 
+        self.title = "IMA"+self.task
+        
+class IMA_parameters_D5:# for D5
+    def __init__(self, delta, noise):           
+        #used to pass parameters to ima iteration
+        self.task = "005"
+        self.noise = noise 
+        self.norm_type = 2
+        self.alpha = 4
+        self.max_iter = 20
+        self.stop = 1 
+        self.refine_Xn_max_iter = 10
+        self.beta = 0.5
+        self.beta_position =1
+        self.E = 0
+        self.epoch_refine = 10
+        self.delta = delta #10
+        self.model_eval_attack=0
+        self.model_eval_Xn=0
+        self.model_Xn_advc_p=0
+        self.Xn1_equal_X =0
+        self.Xn2_equal_Xn =0
+        self.pgd_replace_Y_with_Yp=0 
+        self.title = "IMA"+self.task
+
 if __name__ == "__main__":
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
     os.environ["CUDA_VISIBLE_DEVICES"]="1"
-    main()
+    
+    choice  = 1
+    if choice == 0:
+        # D2
+        main(IMA_parameters_D2( 5, 25)) 
+    if choice == 1:
+        # D4
+        main(IMA_parameters_D4(2, 10))
+        # D5
+    if choice == 2:
+        main(IMA_parameters_D5(10, 40))
+    

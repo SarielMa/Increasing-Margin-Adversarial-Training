@@ -304,30 +304,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
         elif reduction =='sum':
             mrse=mrse.sum()
         return mrse
-    """
-    def classify_model_std_output_reg(self,Yp, Y):
-        mrse=self.mrse_shape(Yp, Y, reduction='none')
-        Yp_e_Y=(mrse<=10)
-        return Yp_e_Y
-    
-    def classify_model_adv_output_reg(self,Ypn, Y):
-        #Y could be Ytrue or Ypred
-        mrse=self.mrse_shape(Ypn, Y, reduction='none')
-        Ypn_e_Y=(mrse<=5)
-        return Ypn_e_Y
-    """
-    """
-    def classify_model_std_output_seg_old(self,Yp, Y):
-        dice=dice_seg(Yp, Y, reduction='none')
-        Yp_e_Y=(dice>0.5)
-        return Yp_e_Y
-    #
-    def classify_model_adv_output_seg_old(self,Ypn, Y):
-        #Y could be Ytrue or Ypred
-        dice=dice_seg(Ypn, Y, reduction='none')
-        Ypn_e_Y=(dice>0.85)
-        return Ypn_e_Y
-    """
+
     def classify_model_std_output_seg(self,Yp, Y):
         #valDice = MyDiceIndex(batch_dice=False)
         Yp = Yp[0]
@@ -459,7 +436,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
         elif stop==3:
             stop_if_label_change_next_step=True
         else:
-            print ("AMAT is running")
+            raise Exception("no such a choice")
         #E_new=args.E.detach().clone()
         ###################################################
         
