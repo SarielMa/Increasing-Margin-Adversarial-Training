@@ -43,7 +43,7 @@ def main(params):
     #parser.add_argument("network_trainer")
     parser.add_argument("--task", type = str, default = params.task, help="can be task name or task id")
     #parser.add_argument("fold", help='0, 1, ..., 5 or \'all\'')
-    
+    parser.add_argument('--cuda_id', type=str, required=False, default="1")    
     parser.add_argument("-val", "--validation_only", help="use this if you want to only run the validation",
                         action="store_true")
     parser.add_argument("-c", "--continue_training", help="use this if you want to continue a training",
@@ -104,6 +104,9 @@ def main(params):
                              'Optional. Beta. Use with caution.')
 
     args = parser.parse_args()
+    
+    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
+    os.environ["CUDA_VISIBLE_DEVICES"]=args.cuda_id 
     
     task = args.task
     #fold = args.fold
@@ -287,7 +290,7 @@ if __name__ == "__main__":
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   # see issue #152
     os.environ["CUDA_VISIBLE_DEVICES"]="1"
     
-    choice  = 0
+    choice  = 2
     if choice == 0:
         # D2
         main(IMA_parameters_D2( 5, 25)) 

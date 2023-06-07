@@ -35,7 +35,7 @@ def maybe_mkdir_p(directory: str) -> None:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--task", type = str, default = params.task, help="can be task name or task id")    
+    parser.add_argument("--task", type = str, default = "004", help="can be task name or task id")    
     parser.add_argument("-val", "--validation_only", help="use this if you want to only run the validation",
                         action="store_true")
     parser.add_argument("-c", "--continue_training", help="use this if you want to continue a training",

@@ -64,8 +64,7 @@ class MultipleOutputLossKL(nn.Module):
             weights = self.weight_factors
 
         l = weights[0] * self.loss(F.log_softmax(x[0], dim=1), F.softmax(y[0], dim=1))
-        batch = x[0].size(0)*x[0].size(-2)*x[0].size(-1)
         for i in range(1, len(x)):
             if weights[i] != 0:
-                l += weights[i] * self.loss(F.log_softmax(x[i].view(batch, -1), dim=1), F.softmax(y[i].view(batch, -1), dim=1))
+                l += weights[i] * self.loss(F.log_softmax(x[i], dim=1), F.softmax(y[i], dim=1))
         return l

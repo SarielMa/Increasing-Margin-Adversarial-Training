@@ -41,7 +41,7 @@ def main():
     parser.add_argument("task", help="can be task name or task id")
     parser.add_argument("fold", help='0, 1, ..., 5 or \'all\'')
     """
-    parser.add_argument("--task", type = str, default = params.task, help="can be task name or task id")
+    parser.add_argument("--task", type = str, help="can be task name or task id")
     parser.add_argument('--cuda_id', type=str, required=False, default="1")
     parser.add_argument("-val", "--validation_only", help="use this if you want to only run the validation",
                         action="store_true")
