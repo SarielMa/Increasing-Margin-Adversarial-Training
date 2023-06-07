@@ -686,7 +686,7 @@ class NetworkTrainer(object):
 
         while self.epoch < self.max_num_epochs:
             self.print_to_log_file("\nepoch: ", self.epoch)
-            epoch_start_time = time()
+            #epoch_start_time = time()
             train_losses_epoch = []
             #----------------------------
             #flag1=torch.zeros(len(args.E), dtype=torch.float32)
@@ -694,11 +694,16 @@ class NetworkTrainer(object):
             #E_new=args.E.detach().clone()
             #---------------------------
             # train one epoch-------------------------------------------------------------------------------------------------
+            import time
+            t1 = time.time()            
             self.network.train()
             for c in range(self.num_batches_per_epoch):
                 l = self.run_PGD_iteration(self.tr_gen, args, True)
                 #print("batch ",c,"finished, PGD train")
                 train_losses_epoch.append(l)
+            timecost = time.time() - t1
+            print("++++time cost is ", timecost)
+            print ("hours is ", timecost/3600 * 50)               
             # one epoch finished
             self.all_tr_losses.append(np.mean(train_losses_epoch))
             self.print_to_log_file("train loss : %.4f" % self.all_tr_losses[-1])
@@ -729,14 +734,14 @@ class NetworkTrainer(object):
 
             continue_training = self.my_on_epoch_end(args)
 
-            epoch_end_time = time()
+            #epoch_end_time = time()
 
             if not continue_training:
                 # allows for early stopping
                 break
 
             self.epoch += 1
-            self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
+            #self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
 
         self.epoch -= 1  # if we don't do this we can get a problem with loading model_final_checkpoint.
 
@@ -791,13 +796,15 @@ class NetworkTrainer(object):
 
         while self.epoch < self.max_num_epochs:
             self.print_to_log_file("\nepoch: ", self.epoch)
-            epoch_start_time = time()
+            #epoch_start_time = time()
             train_losses_epoch = []
             #----------------------------
             flag1=torch.zeros(len(args.E), dtype=torch.float32)
             flag2=torch.zeros(len(args.E), dtype=torch.float32)
             E_new=args.E.detach().clone()
             #---------------------------
+            import time
+            t1 = time.time()
             # train one epoch
             self.network.train()
             for c in range(self.num_batches_per_epoch):
@@ -806,6 +813,9 @@ class NetworkTrainer(object):
                 #print("batch ",c,"finished")
                 train_losses_epoch.append(l)
             # one epoch finished
+            timecost = time.time() - t1
+            print("++++time cost is ", timecost)
+            print ("hours is ", timecost/3600 * 50)
             self.all_tr_losses.append(np.mean(train_losses_epoch))
             self.print_to_log_file("train loss : %.4f" % self.all_tr_losses[-1])
             #------update the margin
@@ -816,10 +826,10 @@ class NetworkTrainer(object):
             #------
             self.update_train_loss_MA()  # needed for lr scheduler and stopping of training
 
-            epoch_end_time = time()
+            #epoch_end_time = time()
 
             self.epoch += 1
-            print ("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
+            #print ("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
 
         self.epoch -= 1  # if we don't do this we can get a problem with loading model_final_checkpoint.
 
@@ -959,16 +969,21 @@ class NetworkTrainer(object):
 
         while self.epoch < self.max_num_epochs:
             self.print_to_log_file("\nepoch: ", self.epoch)
-            epoch_start_time = time()
+            #epoch_start_time = time()
             train_losses_epoch = []
             #----------------------------
             # train one epoch
+            import time
+            t1 = time.time()
             self.network.train()
             for c in range(self.num_batches_per_epoch):
                 l = self.run_TRADES_iteration(self.tr_gen, True)
                 #print("batch ",c,"finished")
                 train_losses_epoch.append(l)
             # one epoch finished
+            timecost = time.time() - t1
+            print("++++time cost is ", timecost)
+            print ("hours is ", timecost/3600 * 50)
             self.all_tr_losses.append(np.mean(train_losses_epoch))
             self.print_to_log_file("train loss : %.4f" % self.all_tr_losses[-1])
             #------          
@@ -999,14 +1014,14 @@ class NetworkTrainer(object):
 
             continue_training = self.on_epoch_end()
 
-            epoch_end_time = time()
+            #epoch_end_time = time()
 
             if not continue_training:
                 # allows for early stopping
                 break
 
             self.epoch += 1
-            self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
+            #self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
 
         self.epoch -= 1  # if we don't do this we can get a problem with loading model_final_checkpoint.
 
@@ -1077,18 +1092,23 @@ class NetworkTrainer(object):
 
         while self.epoch < self.max_num_epochs:
             self.print_to_log_file("\nepoch: ", self.epoch)
-            epoch_start_time = time()
+            #epoch_start_time = time()
             train_losses_epoch = []
             #----------------------------
             # compute the weight
             rampup_rate = sigmoid_rampup(self.epoch, es_start, es_end)
             weight = rampup_rate * 300
+            import time
+            t1 = time.time()
             self.network.train()
             # train one iteration
             for c in range(self.num_batches_per_epoch):
                 l = self.run_TE_iteration( pgd_te, self.tr_gen,  self.epoch, weight, True)
                 #print("batch ",c,"finished")
                 train_losses_epoch.append(l)
+            timecost = time.time() - t1
+            print("++++time cost is ", timecost)
+            print ("hours is ", timecost/3600 * 50)
             # one epoch finished
             self.all_tr_losses.append(np.mean(train_losses_epoch))
             self.print_to_log_file("train loss : %.4f" % self.all_tr_losses[-1])
@@ -1120,14 +1140,14 @@ class NetworkTrainer(object):
 
             continue_training = self.on_epoch_end()
 
-            epoch_end_time = time()
+            #epoch_end_time = time()
 
             if not continue_training:
                 # allows for early stopping
                 break
 
             self.epoch += 1
-            self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
+            #self.print_to_log_file("This epoch took %f s\n" % (epoch_end_time - epoch_start_time))
 
         self.epoch -= 1  # if we don't do this we can get a problem with loading model_final_checkpoint.
 
