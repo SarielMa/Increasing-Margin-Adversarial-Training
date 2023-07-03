@@ -51,6 +51,8 @@ Based on the original nnUnet, we made modifications on:
 ## Trained models
 Models are available at https://drive.google.com/drive/folders/1G51RnA4HxHivSy8RsKzvhFzkqob8ahLY?usp=sharing
 
+For classification models, the random seed is 1. For segmentation models, the random seed is preset by nnUnet.
+
 
 ## Contact
 Should you have any question, please contact liang.liang@miami.edu or l.ma@miami.edu
