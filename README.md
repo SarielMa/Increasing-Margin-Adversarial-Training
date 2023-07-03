@@ -5,16 +5,16 @@ The official source code for the paper "Increasing-Margin Adversarial (IMA) Trai
 
 ### CIFAR10
 1. run CIFAR10_CNNM_IMA.py to get IMA model
-2. run CIFAR10_CNNM_ce.py to get defenseless model
+2. run CIFAR10_CNNM_ce.py to get the defenseless model
 
 ### PathMNIST
 1. run MedMNIST_CNN_IMA.py to get IMA model
-2. run MedMNIST_CNN_ce.py to get defenseless model
+2. run MedMNIST_CNN_ce.py to get the defenseless model
 
 ### COVID-19
 0. The data is downloaded from https://www.kaggle.com/plameneduardo/sarscov2-ctscan-dataset
 1. run COVID19a_CNN_IMA.py to get IMA model
-2. run COVID19a_CNN_ce.py to get defenseless model
+2. run COVID19a_CNN_ce.py to get the defenseless model
 
 
 ## Segmentation
@@ -32,7 +32,7 @@ for deep learning-based biomedical image segmentation. Nature Methods, 1-9.)
 
 The experiment was run on Tesla V100 GPUs, CentOS operating system.
 
-Based on original nnUnet, we did modifications on:
+Based on the original nnUnet, we made modifications on:
 1.nnunet/training/network_training/network_trainer.py
 2.nnunet/training/network_training/nnUNetTrainer.py
 3.nnunet/training/network_training/nnUNetTrainerV2.py
@@ -45,6 +45,10 @@ Based on original nnUnet, we did modifications on:
 10.nnunet/TE/
 11.nnunet/TRADES/
 12.nnunet/autoattackfornnunet/
+
+## Trained models
+Models are available at https://drive.google.com/drive/folders/1G51RnA4HxHivSy8RsKzvhFzkqob8ahLY?usp=sharing
+
 
 ## Contact
 Should you have any question, please contact liang.liang@miami.edu or l.ma@miami.edu
